@@ -21,9 +21,4 @@ public class FlightProducerApplication {
     public MessageProducer messageProducer() {
         return new MessageProducer();
     }
-
-    @Bean
-    public MessageListener messageListener() {
-        return new MessageListener();
-    }
 }
