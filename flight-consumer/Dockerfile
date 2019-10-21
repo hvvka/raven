@@ -8,4 +8,4 @@ RUN chmod +x ./scripts/docker-entrypoint.sh
 
 ENTRYPOINT ["./scripts/docker-entrypoint.sh"]
 
-CMD ["java", "-jar" ,"build/libs/flight-producer-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar" ,"build/libs/flight-consumer-0.0.1-SNAPSHOT.jar"]
