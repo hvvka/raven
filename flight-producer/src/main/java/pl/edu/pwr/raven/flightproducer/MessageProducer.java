@@ -9,11 +9,6 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 public class MessageProducer {
 
     private static final Logger LOG = LoggerFactory.getLogger(MessageProducer.class);
@@ -47,21 +42,7 @@ public class MessageProducer {
     }
 
     private void readFile() {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(inputFileName)))) {
-            readLines(br);
-        } catch (IOException | InterruptedException e) {
-            LOG.error("Failed to open file {}", inputFileName, e);
-        }
-    }
-
-    private void readLines(BufferedReader br) throws IOException, InterruptedException {
-        // Omit CSV header
-        br.readLine();
-
-        String flightRecord;
-        while ((flightRecord = br.readLine()) != null) {
-            this.sendMessage(flightRecord);
-            Thread.sleep(1000);
-        }
+        FileReader fileReader = new FileReader(inputFileName);
+        fileReader.setOnNewRecord(this::sendMessage);
     }
 }
