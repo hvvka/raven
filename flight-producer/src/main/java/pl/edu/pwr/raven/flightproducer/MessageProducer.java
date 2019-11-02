@@ -38,10 +38,6 @@ public class MessageProducer {
     }
 
     public void sendFlights() {
-        readFile();
-    }
-
-    private void readFile() {
         FileReader fileReader = new FileReader(inputFileName);
         fileReader.setOnNewRecord(this::sendMessage);
     }

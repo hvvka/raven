@@ -11,16 +11,16 @@ services:
       - 9092:9092
     environment:
     # for some machines it might be required to change kafka to their host IP adress (usually 192.168.99.100)
-      KAFKA_ADVERTISED_HOST_NAME: kafka  
+      KAFKA_ADVERTISED_HOST_NAME: localhost  
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-  producer:
-      build: ./flight-producer/
-      volumes:
-        - ./flight-producer/:/volume/
-  consumer:
-      build: ./flight-consumer/
-      volumes:
-        - ./flight-consumer/:/volume/
+  # producer:
+  #     build: ./flight-producer/
+  #     volumes:
+  #       - ./flight-producer/:/volume/
+  # consumer:
+  #     build: ./flight-consumer/
+  #     volumes:
+  #       - ./flight-consumer/:/volume/
         
