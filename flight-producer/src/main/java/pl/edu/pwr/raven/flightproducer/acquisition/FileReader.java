@@ -1,4 +1,4 @@
-package pl.edu.pwr.raven.flightproducer;
+package pl.edu.pwr.raven.flightproducer.acquisition;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.function.Consumer;
 
+/**
+ * @author <a href="mailto:226154@student.pwr.edu.pl">Hanna Grodzicka</a>
+ */
 public class FileReader implements FileMonitorListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileReader.class);

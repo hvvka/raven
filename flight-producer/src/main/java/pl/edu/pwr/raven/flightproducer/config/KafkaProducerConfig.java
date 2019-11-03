@@ -12,6 +12,9 @@ import org.springframework.kafka.core.ProducerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author <a href="mailto:226154@student.pwr.edu.pl">Hanna Grodzicka</a>
+ */
 @Configuration
 public class KafkaProducerConfig {
 

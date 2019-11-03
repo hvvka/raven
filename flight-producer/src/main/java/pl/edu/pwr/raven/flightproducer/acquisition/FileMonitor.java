@@ -1,4 +1,4 @@
-package pl.edu.pwr.raven.flightproducer;
+package pl.edu.pwr.raven.flightproducer.acquisition;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +9,9 @@ import java.io.RandomAccessFile;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @author <a href="mailto:226154@student.pwr.edu.pl">Hanna Grodzicka</a>
+ */
 public class FileMonitor extends Thread {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileMonitor.class);
@@ -83,12 +86,12 @@ public class FileMonitor extends Thread {
             accessFile.readLine();
         }
 
-        String line;
-        do {
-            line = accessFile.readLine();
+        String line = accessFile.readLine();
+        while (line != null && !line.isBlank()) {
             this.fireNewLine(line);
+            line = accessFile.readLine();
             sleep(this.readingDelay);
-        } while (line != null && !line.isBlank());
+        }
 
         return accessFile.getFilePointer();
     }

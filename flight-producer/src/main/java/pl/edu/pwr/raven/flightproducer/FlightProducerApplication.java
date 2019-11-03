@@ -5,6 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * @author <a href="mailto:226154@student.pwr.edu.pl">Hanna Grodzicka</a>
+ */
 @SpringBootApplication
 public class FlightProducerApplication {
 
