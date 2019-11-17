@@ -1,0 +1,5 @@
+{
+  "title": "Linia trendu",
+  "description": "Oszacowanie <b>trendu</b> jest techniką statystyczną ułatwiająca interpretację danych. <br>Gdy szereg pomiarów procesowych jest traktowany jako szereg czasowy, oszacowania trendu można użyć do uzasadnienia niektórych deklaracji trendu danych, powiązanie miar z czasami, w których wystąpiły.<br>Model ten można następnie wykorzystać do opisania zachowania obserwowanych danych.",
+  "legend": "Trend"
+}

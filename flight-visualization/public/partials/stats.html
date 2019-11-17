@@ -1,0 +1,16 @@
+<div class="jumbotron text-center">
+    <h1>{{ title }}</h1>
+    <p class="description" ng-bind-html="description"></p>
+</div>
+
+<div class="text-left" id="details" ng-bind-html="details"></div>
+
+<img ng-src="{{ statsSrc }}">
+
+<hr>
+
+<table class="table table-striped table-sm">
+    <tr ng-repeat="row in items">
+        <td ng-repeat="column in row">{{column}}</td>
+    </tr>
+</table>

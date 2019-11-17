@@ -1,0 +1,5 @@
+{
+  "title": "Przewidywanie opóźnień",
+  "description": "<b class=\"text-info\">Prognozowanie</b> to proces, który stara się przewidzieć przyszłości w oparciu o dane i analizy danych ubiegłym i obecnym powszechnie korzysta z <a href=\"#!/trend\">trendu</a>.<br>W tej analizie zastosowano metody <b class=\"text-success\">Najmniejszych Kwadratów</b> i <b class=\"text-success\">Maksymalnej Entropii</b> do obliczenia współczynników <b class=\"text-success\">modelu autoregresyjnego</b>.",
+  "legend": "Predykcja"
+}

@@ -1,0 +1,5 @@
+{
+  "title": "Noise",
+  "description": "Reprezentacja <b class=\"text-info\">szumu</b> obecnego w danych, tego samego szumu filtrowanego przez <a href=\"#!/smoothing\">wygładzenie</a>",
+  "legend": "Szum"
+}

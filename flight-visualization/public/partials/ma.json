@@ -1,0 +1,5 @@
+{
+  "title": "Średnia ruchoma",
+  "description": "<a href=\"https://pl.wikipedia.org/wiki/%C5%9Arednia_ruchoma\"><b class=\"text-info\">Średnia ruchoma</b></a> (MA, od ang. <i>moving average</i>) to narzędzie używane do analizy szeregów historycznych, które pokazuje średnią wartości szeregu na podstawie każdej iteracji na wartościach uprzednio analizowanych.<br>Średnie kroczące można również postrzegać jako linie trendu.",
+  "legend": "MA"
+}
