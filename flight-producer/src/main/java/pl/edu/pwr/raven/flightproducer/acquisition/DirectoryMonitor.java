@@ -44,7 +44,7 @@ public class DirectoryMonitor extends Thread {
             WatchKey key;
             while ((key = watchService.take()) != null) {
                 for (WatchEvent<?> event : key.pollEvents()) {
-                    String filePath = this.directoryPath.resolve(String.valueOf(event.context())).toString(); //this.directoryPath + '/' + event.context();
+                    String filePath = this.directoryPath.resolve(String.valueOf(event.context())).toString();
                     LOG.info("Added new file: {}", filePath);
                     FileReader fileReader = new FileReader(filePath);
                     fileReader.setOnNewRecord(this.onNewRecord);

@@ -44,6 +44,8 @@ public class MessageProducer {
     public void sendFlights() {
         DirectoryMonitor directoryMonitor = new DirectoryMonitor(inputDirectory);
         directoryMonitor.setOnNewRecord(this::sendMessage);
+        // TODO: AVRO schema + writing to a CSV file (output/valid-flights.csv)
+        // directoryMonitor.setOnNewRecord(this::saveToCSV);
         directoryMonitor.start();
     }
 }

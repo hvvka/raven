@@ -30,3 +30,5 @@ out/
 
 ### VS Code ###
 .vscode/
+
+avro-tools-1.9.1.jar

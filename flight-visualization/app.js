@@ -18,15 +18,6 @@ var request = require("request")
 //   }
 // })
 
-// remove Saturdays
-// var date, dateFormat;
-// for (var i = 1; i < stats.length; i++) {
-//   date = stats[i][0].replace("/17", "/2017");
-//   dateFormat = new Date(date.split('/')[2] + "-" + date.split('/')[1] + "-" + date.split('/')[0]);
-//   if (dateFormat.getDay() == 6)
-//     stats.splice(i, 1);
-// }
-
 var app = express();
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -89,29 +80,28 @@ app.post('/noise', function (req, res) {
 
 app.post('/forecast', function (req, res) {
     var t = new timeseries.main(stats);
-    t.smoother({period: 5}).save('smoothed');
+    t.smoother({period: 1}).save('smoothed');
     var bestSettings = t.regression_forecast_optimize();
     var forecast = t.sliding_regression_forecast({
         sample: bestSettings.sample,
         degree: bestSettings.degree,
         method: bestSettings.method
-    })
+    });
     var forecastChart = forecast.chart({main: false}) + "&chm=s,0000ff,0," + bestSettings.sample + ",8.0";
-    console.log(forecast.data);
     res.send(forecastChart);
 });
 
 app.post('/forecast/chart', function (req, res) {
     var t = new timeseries.main(stats);
-    t.smoother({period: 5}).save('smoothed');
+    t.smoother({period: 1}).save('smoothed');
     var bestSettings = t.regression_forecast_optimize();
     var forecast = t.sliding_regression_forecast({
         sample: bestSettings.sample,
         degree: bestSettings.degree,
         method: bestSettings.method
-    })
-    console.log(forecast);
-    console.log(forecast.saved[0].data);
+    });
+    // console.log(forecast);
+    // console.log(forecast.saved[0].data);
     res.send(forecast.data);
 });
 
@@ -170,76 +160,76 @@ var stats = [
         "2016-01-13",
         0
     ],
-    // [
-    //     "2016-01-14",
-    //     360
-    // ],
-    // [
-    //     "2016-01-15",
-    //     344
-    // ],
-    // [
-    //     "2016-01-16",
-    //     424
-    // ],
-    // [
-    //     "2016-01-17",
-    //     723
-    // ],
-    // [
-    //     "2016-01-18",
-    //     319
-    // ],
-    // [
-    //     "2016-01-19",
-    //     2939
-    // ],
-    // [
-    //     "2016-01-20",
-    //     119
-    // ],
-    // [
-    //     "2016-01-21",
-    //     0
-    // ],
-    // [
-    //     "2016-01-22",
-    //     2953
-    // ],
-    // [
-    //     "2016-01-23",
-    //     0
-    // ],
-    // [
-    //     "2016-01-24",
-    //     0
-    // ],
-    // [
-    //     "2016-01-25",
-    //     22
-    // ],
-    // [
-    //     "2016-01-26",
-    //     43
-    // ],
-    // [
-    //     "2016-01-27",
-    //     95
-    // ],
-    // [
-    //     "2016-01-28",
-    //     0
-    // ],
-    // [
-    //     "2016-01-29",
-    //     0
-    // ],
-    // [
-    //     "2016-01-30",
-    //     127
-    // ],
-    // [
-    //     "2016-01-31",
-    //     0
-    // ]
-]
+    [
+        "2016-01-14",
+        360
+    ],
+    [
+        "2016-01-15",
+        344
+    ],
+    [
+        "2016-01-16",
+        424
+    ],
+    [
+        "2016-01-17",
+        723
+    ],
+    [
+        "2016-01-18",
+        319
+    ],
+    [
+        "2016-01-19",
+        2939
+    ],
+    [
+        "2016-01-20",
+        119
+    ],
+    [
+        "2016-01-21",
+        0
+    ],
+    [
+        "2016-01-22",
+        2953
+    ],
+    [
+        "2016-01-23",
+        0
+    ],
+    [
+        "2016-01-24",
+        0
+    ],
+    [
+        "2016-01-25",
+        22
+    ],
+    [
+        "2016-01-26",
+        43
+    ],
+    [
+        "2016-01-27",
+        95
+    ],
+    [
+        "2016-01-28",
+        0
+    ],
+    [
+        "2016-01-29",
+        0
+    ],
+    [
+        "2016-01-30",
+        127
+    ],
+    [
+        "2016-01-31",
+        0
+    ]
+];

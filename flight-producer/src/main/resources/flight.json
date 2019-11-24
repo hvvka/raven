@@ -1,0 +1,123 @@
+{
+  "type": "record",
+  "namespace": "avro",
+  "name": "Flight",
+  "doc": "Avro Schema for Flight",
+  "fields": [
+    {
+      "name": "flightSymbol",
+      "type": "string",
+      "doc": "Symbol of flight"
+    },
+    {
+      "name": "airline",
+      "type": "string",
+      "doc": "Name of airline"
+    },
+    {
+      "name": "flightType",
+      "type": {
+        "name": "FlightType",
+        "type": "enum",
+        "doc": "Type of flight",
+        "symbols": [
+          "International",
+          "Regional",
+          "Domestic"
+        ]
+      }
+    },
+    {
+      "name": "scheduledDeparture",
+      "type": "string",
+      "doc": "Date and time for a scheduled flight departure"
+    },
+    {
+      "name": "departure",
+      "type": "string",
+      "doc": "Date and time for a flight departure"
+    },
+    {
+      "name": "scheduledArrival",
+      "type": "string",
+      "doc": "Date and time for a scheduled flight arrival"
+    },
+    {
+      "name": "arrival",
+      "type": "string",
+      "doc": "Date and time for a flight arrival"
+    },
+    {
+      "name": "flightStatus",
+      "type": {
+        "name": "FlightStatus",
+        "type": "enum",
+        "doc": "Indicator whether the flight was cancelled or completed",
+        "symbols": [
+          "Confirmed",
+          "Cancelled"
+        ]
+      }
+    },
+    {
+      "name": "justification",
+      "type": "string",
+      "doc": "Justification code"
+    },
+    {
+      "name": "airportFrom",
+      "type": "string",
+      "doc": "Airport of departure"
+    },
+    {
+      "name": "airportTo",
+      "type": "string",
+      "doc": "Airport of arrival"
+    },
+    {
+      "name": "longitudeTo",
+      "type": "double",
+      "doc": "Longitude coordinate of destination point"
+    },
+    {
+      "name": "latitudeTo",
+      "type": "double",
+      "doc": "Latitude coordinate of destination point"
+    },
+    {
+      "name": "longitudeFrom",
+      "type": "double",
+      "doc": "Longitude coordinate of origin point"
+    },
+    {
+      "name": "latitudeFrom",
+      "type": "double",
+      "doc": "Latitude coordinate of origin point"
+    },
+    {
+      "name": "departureDelay",
+      "type": "int",
+      "doc": "Departure delay in minutes"
+    },
+    {
+      "name": "arrivalDelay",
+      "type": "int",
+      "doc": "Arrival delay in minutes"
+    },
+    {
+      "name": "distanceInMeters",
+      "type": "double",
+      "doc": "Distance travelled by an airplane in meters"
+    },
+    {
+      "name": "flightNumber",
+      "type": "int",
+      "doc": "Flight number (second part of flight symbol)"
+    },
+    {
+      "name": "airlineCode",
+      "type": "string",
+      "doc": "Airline code (first part of flight symbol)"
+    }
+  ]
+}
