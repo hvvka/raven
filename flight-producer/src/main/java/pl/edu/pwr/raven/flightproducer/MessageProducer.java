@@ -10,10 +10,10 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import pl.edu.pwr.raven.flightproducer.acquisition.DirectoryMonitor;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * @author <a href="mailto:226154@student.pwr.edu.pl">Hanna Grodzicka</a>
@@ -22,7 +22,7 @@ public class MessageProducer {
 
     private static final Logger LOG = LoggerFactory.getLogger(MessageProducer.class);
 
-    private final File csvOutputFile;
+    private File csvOutputFile;
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
@@ -36,32 +36,33 @@ public class MessageProducer {
     @Value(value = "${topic.name}")
     private String topicName;
 
-    public MessageProducer() throws IOException {
+    @PostConstruct
+    void initOutputFile() {
         this.csvOutputFile = new File(outputFile);
-        this.csvOutputFile.createNewFile();
     }
 
     public void sendMessage(String message) {
-        saveToCsv(message);
-        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topicName, message);
-        future.addCallback(new ListenableFutureCallback<>() {
-            @Override
-            public void onSuccess(SendResult<String, String> result) {
-                LOG.info("Sent message=[{}] with offset=[{}]", message, result.getRecordMetadata().offset());
-            }
+        FlightBuilder.createFlight(message).ifPresent(flight -> {
+            saveToCsv(message);
+            ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topicName, flight.toString());
+            future.addCallback(new ListenableFutureCallback<>() {
+                @Override
+                public void onSuccess(SendResult<String, String> result) {
+                    LOG.info("Sent message=[{}] with offset=[{}]", flight, result.getRecordMetadata().offset());
+                }
 
-            @Override
-            public void onFailure(Throwable ex) {
-                LOG.error("Unable to send message=[{}]", message, ex);
-            }
+                @Override
+                public void onFailure(Throwable ex) {
+                    LOG.error("Unable to send message=[{}]", message, ex);
+                }
+            });
         });
     }
 
     private void saveToCsv(String message) {
-        // TODO: validate message
-        try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
-            pw.println(message);
-        } catch (FileNotFoundException e) {
+        try (FileWriter pw = new FileWriter(csvOutputFile, true)) {
+            pw.append(message + '\n');
+        } catch (IOException e) {
             LOG.error("", e);
         }
     }
@@ -69,8 +70,6 @@ public class MessageProducer {
     public void sendFlights() {
         DirectoryMonitor directoryMonitor = new DirectoryMonitor(inputDirectory);
         directoryMonitor.setOnNewRecord(this::sendMessage);
-        // TODO: AVRO schema + writing to a CSV file (output/valid-flights.csv)
-        // directoryMonitor.setOnNewRecord(this::saveToCSV);
         directoryMonitor.start();
     }
 }
