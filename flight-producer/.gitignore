@@ -31,4 +31,8 @@ out/
 ### VS Code ###
 .vscode/
 
+### Application ###
 avro-tools-1.9.1.jar
+logs/
+input/
+output/
