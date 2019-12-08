@@ -33,7 +33,10 @@ public class DirectoryMonitor extends Thread {
     private void addExistingFiles() {
         File directory = directoryPath.toFile();
         Arrays.stream(directory.listFiles())
-                .map(file -> new FileReader(file.getAbsolutePath()))
+                .map(file -> {
+                    LOG.info("Registered input file: {}", file);
+                    return new FileReader(file.getAbsolutePath());
+                })
                 .forEach(fileReader -> fileReader.setOnNewRecord(this.onNewRecord));
     }
 
