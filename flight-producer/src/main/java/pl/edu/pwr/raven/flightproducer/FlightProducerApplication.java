@@ -3,7 +3,6 @@ package pl.edu.pwr.raven.flightproducer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
 
 /**
  * @author <a href="mailto:226154@student.pwr.edu.pl">Hanna Grodzicka</a>
@@ -16,12 +15,7 @@ public class FlightProducerApplication {
 
         MessageProducer producer = context.getBean(MessageProducer.class);
         producer.sendFlights();
-
+//
         context.close();
-    }
-
-    @Bean
-    public MessageProducer messageProducer() {
-        return new MessageProducer();
     }
 }

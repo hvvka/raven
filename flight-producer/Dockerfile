@@ -2,7 +2,9 @@ FROM hirokimatsumoto/alpine-openjdk-11
 
 COPY . .
 
-RUN apk update && apk add --update netcat-openbsd
+RUN apk update && \
+    apk add --update netcat-openbsd && \
+    apk add sshfs
 RUN ./gradlew bootJar
 RUN chmod +x ./scripts/docker-entrypoint.sh
 RUN chmod +x ./mount.sh
