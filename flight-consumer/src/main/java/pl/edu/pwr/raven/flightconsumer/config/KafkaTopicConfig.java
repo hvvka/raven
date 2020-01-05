@@ -16,6 +16,12 @@ public class KafkaTopicConfig {
     @Value(value = "${kafka.bootstrap.address}")
     private String bootstrapAddress;
 
+    @Value(value = "${topic.receive.name}")
+    private String topicReceiveName;
+
+    @Value(value = "${topic.send.name}")
+    private String topicSendName;
+
     @Bean
     public KafkaAdmin kafkaAdmin() {
         Map<String, Object> config = new HashMap<>();
@@ -23,9 +29,11 @@ public class KafkaTopicConfig {
         return new KafkaAdmin(config);
     }
 
-    @Bean
     public NewTopic rawFlightDataTopic() {
-        final String topicName = "processed-data";
-        return new NewTopic(topicName, 1, (short) 1);
+        return new NewTopic(topicReceiveName, 1, (short) 1);
+    }
+
+    public NewTopic processedDataTopic() {
+        return new NewTopic(topicSendName, 1, (short) 1);
     }
 }

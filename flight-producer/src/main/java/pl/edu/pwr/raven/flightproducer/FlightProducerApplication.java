@@ -15,7 +15,7 @@ public class FlightProducerApplication {
 
         MessageProducer producer = context.getBean(MessageProducer.class);
         producer.sendFlights();
-//
+
         context.close();
     }
 }
