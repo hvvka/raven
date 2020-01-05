@@ -17,13 +17,15 @@ public class FlightConsumerApplication implements CommandLineRunner {
     @Autowired
     private FlightRepository flightRepository;
 
+    private MessageSender messageSender = new MessageSender();
+
     public static void main(String[] args) {
         SpringApplication.run(FlightConsumerApplication.class, args);
     }
 
     @Bean
     public MessageListener messageListener() {
-        return new MessageListener(flightRepository);
+        return new MessageListener(flightRepository, messageSender);
     }
 
     @Override

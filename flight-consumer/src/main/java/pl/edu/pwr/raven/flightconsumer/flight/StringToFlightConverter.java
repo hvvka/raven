@@ -50,12 +50,12 @@ public class StringToFlightConverter {
                                                  double arrivalDelay)
             throws ParseException
     {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date departureDate = simpleDateFormat.parse(departure);
-        Date arrivalDate = simpleDateFormat.parse(arrival);
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        final Date departureDate = simpleDateFormat.parse(departure);
+        final Date arrivalDate = simpleDateFormat.parse(arrival);
 
-        long diffInMillies = Math.abs(arrivalDate.getTime() - departureDate.getTime());
-        long diff = TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MILLISECONDS);
+        final long diffInMillis = Math.abs(arrivalDate.getTime() - departureDate.getTime());
+        final long diff = TimeUnit.MINUTES.convert(diffInMillis, TimeUnit.MILLISECONDS);
 
         return (departureDelay + arrivalDelay) / (double)(diff);
     }

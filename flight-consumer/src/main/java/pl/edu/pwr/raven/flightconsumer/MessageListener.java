@@ -11,11 +11,13 @@ import java.text.ParseException;
 
 public class MessageListener {
 
-    public MessageListener(FlightRepository flightRepository) {
+    public MessageListener(FlightRepository flightRepository, MessageSender sender) {
         this.flightRepository = flightRepository;
+        this.sender = sender;
     }
 
     private FlightRepository flightRepository;
+    private MessageSender sender;
     private static final Logger LOG = LoggerFactory.getLogger(MessageListener.class);
 
     @KafkaListener(topics = "${topic.name}", groupId = "flight", containerFactory = "flightKafkaListenerContainerFactory")
@@ -28,6 +30,9 @@ public class MessageListener {
 
             LOG.info("Saving to database");
             flightRepository.save(flight);
+
+            LOG.info("Sending processed data to topic");
+            sender.send(flight);
         }
         catch (ParseException ex)
         {
