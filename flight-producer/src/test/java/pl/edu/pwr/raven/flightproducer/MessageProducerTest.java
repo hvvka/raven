@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringBootTest()
+@SpringBootTest
 public class MessageProducerTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(MessageProducerTest.class);
