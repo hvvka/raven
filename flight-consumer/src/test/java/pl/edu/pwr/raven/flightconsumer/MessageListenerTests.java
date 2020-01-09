@@ -4,6 +4,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.*;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,20 +52,22 @@ public class MessageListenerTests {
 
     @ClassRule
     public static EmbeddedKafkaRule embeddedKafka =
-            new EmbeddedKafkaRule(1, true, TOPIC_NAME);
+            new EmbeddedKafkaRule(1, false, TOPIC_NAME);
 
     private MessageProducer producerMock = Mockito.mock(MessageProducer.class);
 
     @MockBean
-    private FlightRepository mockRepository;
+    private FlightRepository mockRepository;// = Mockito.mock(FlightRepository.class);
 
+    @InjectMocks
     private MessageListener sut;
 
+    @Autowired
     private KafkaTemplate<String, String> producer;
 
     @Before
     public void setUp() {
-        this.producer = buildKafkaTemplate();
+        // this.producer = buildKafkaTemplate();
         this.producer.setDefaultTopic(TOPIC_NAME);
 
 //        // wait until the partitions are assigned
@@ -72,22 +75,22 @@ public class MessageListenerTests {
 //                .getListenerContainers()) {
 //            ContainerTestUtils.waitForAssignment(messageListenerContainer,
 //                    embeddedKafka.getEmbeddedKafka().getPartitionsPerTopic());
-//        }`
+//        }
 
-        this.sut = new MessageListener(mockRepository, producerMock);
+        // this.sut = new MessageListener(mockRepository, producerMock);
     }
 
-    private KafkaTemplate<String, String> buildKafkaTemplate() {
-        Map<String, Object> senderProps = KafkaTestUtils.producerProps(embeddedKafka.getEmbeddedKafka());
-        senderProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        senderProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        ProducerFactory<String, String> pf = new DefaultKafkaProducerFactory<>(senderProps);
-        return new KafkaTemplate<>(pf);
-    }
+//    private KafkaTemplate<String, String> buildKafkaTemplate() {
+//        Map<String, Object> senderProps = KafkaTestUtils.producerProps(embeddedKafka.getEmbeddedKafka());
+//        senderProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+//        senderProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+//        ProducerFactory<String, String> pf = new DefaultKafkaProducerFactory<>(senderProps);
+//        return new KafkaTemplate<>(pf);
+//    }
 
     @Test
-    public void dummyTest() {
-        final String validFlightRecord = "" +
+    public void dummyTest() throws Exception {
+        final String validFlightRecord = "{" +
                 "\"flightSymbol\": \"AAL - 203\"," +
                 "\"airline\": \"AMERICAN AIRLINES INC\"," +
                 "\"flightType\": \"International\"," +
@@ -107,7 +110,8 @@ public class MessageListenerTests {
                 "\"arrivalDelay\": 0," +
                 "\"distanceInMeters\": 6910628.87158164," +
                 "\"flightNumber\": 203," +
-                "\"airlineCode\": \"AAL\"";
+                "\"airlineCode\": \"AAL\"" +
+                "}";
         final Flight expectedFlight =  new FlightBuilder()
                                             .setFlightSymbol("AAL - 203")
                                             .setAirline("AMERICAN AIRLINES INC")
@@ -124,9 +128,11 @@ public class MessageListenerTests {
                                             .setFlightNumber(203)
                                             .setAirlineCode("AAL")
                                             .createFlight();
-        producer.sendDefault("1", validFlightRecord);
+        Thread.sleep(1000);
+        producer.send(TOPIC_NAME, validFlightRecord);
+        producer.flush();
 
-        verify(mockRepository).save(expectedFlight);
+        // verify(mockRepository).save(expectedFlight);
         verify(producerMock).send(expectedFlight);
     }
 }
