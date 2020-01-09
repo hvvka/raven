@@ -75,7 +75,7 @@ public class MessageProducerTests {
         assertThat(singleRecord.value()).isEqualTo(validFlight.toString());
     }
 
-    private Flight getExpectedValidFlight() {
+    static Flight getExpectedValidFlight() {
         return new FlightBuilder()
                 .setFlightSymbol("AAL - 203")
                 .setAirline("AMERICAN AIRLINES INC")
