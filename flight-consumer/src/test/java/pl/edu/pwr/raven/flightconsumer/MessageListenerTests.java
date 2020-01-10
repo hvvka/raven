@@ -50,12 +50,6 @@ public class MessageListenerTests {
     private EmbeddedKafkaBroker embeddedKafkaBroker;
 
     @Autowired
-    private MessageProducer messageProducer;
-
-    @Autowired
-    private MessageListener messageListener;
-
-    @Autowired
     private FlightRepository flightRepository;
 
     private Consumer<String, String> consumer;
