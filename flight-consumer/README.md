@@ -15,7 +15,7 @@ To run MongoDB (i.e. the mongod process) as a macOS service:
 $ brew services start mongodb-community
 ```
 
-Verify it is running"
+Verify it is running:
 ```bash
 $ ps aux | grep -v grep | grep mongod
 ```

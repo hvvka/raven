@@ -21,7 +21,6 @@ jobs:
       - docker build -t producer ./flight-producer
       - docker tag producer $DOCKER_USERNAME/producer
       - docker push $DOCKER_USERNAME/producer
-      script:
       - cd flight-consumer       
       - ./gradlew test
       - ./gradlew bootJar
