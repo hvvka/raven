@@ -19,10 +19,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'org.json:json:20190722'
 
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
+    testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    testCompile group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo', version: '2.2.0'
+    testCompile group: 'org.awaitility', name: 'awaitility', version: '4.0.2'
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation 'org.springframework.kafka:spring-kafka-test'
+
 }
 
 test {

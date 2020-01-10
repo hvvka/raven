@@ -29,7 +29,7 @@ public class MessageListener {
         LOG.info("Received message: [{}]", input);
 
         try {
-            final Flight flight = StringToFlightConverter.convertToFlight(input);
+            Flight flight = StringToFlightConverter.convertToFlight(input);
             LOG.info("Converted message: {}", flight);
 
             LOG.info("Saving to database");

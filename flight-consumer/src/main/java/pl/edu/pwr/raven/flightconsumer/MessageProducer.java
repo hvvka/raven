@@ -30,7 +30,6 @@ public class MessageProducer {
             @Override
             public void onSuccess(SendResult<String, String> result) {
                 LOG.info("Sent message=[{}] with offset=[{}]", flight, result.getRecordMetadata().offset());
-                // TODO: Send to other topic for visualisation
             }
 
             @Override
