@@ -6,6 +6,8 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.awaitility.Awaitility;
+import org.awaitility.Durations;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +20,10 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
+import pl.edu.pwr.raven.flightconsumer.flight.Flight;
+import pl.edu.pwr.raven.flightconsumer.flight.FlightRepository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static pl.edu.pwr.raven.flightconsumer.MessageProducerTests.getExpectedValidFlight;
 
 @RunWith(SpringRunner.class)
+@DirtiesContext
 @SpringBootTest
 @EmbeddedKafka(
         topics = {"raw-flight-data", "processed-data"}
@@ -49,11 +55,10 @@ public class MessageListenerTests {
     @Autowired
     private MessageListener messageListener;
 
-    private Consumer<String, String> consumer;
+    @Autowired
+    private FlightRepository flightRepository;
 
-    private static String removeId(String flight) {
-        return flight.replaceAll("id='.*'", "id=''");
-    }
+    private Consumer<String, String> consumer;
 
     @Before
     public void setUp() {
@@ -63,8 +68,30 @@ public class MessageListenerTests {
         consumer.poll(0);
     }
 
+    private static String removeId(String flight) {
+        return flight.replaceAll("id='.*'", "id=''");
+    }
+
     @Test
-    public void kafkaSetup_withTopic_ensureSendMessageIsReceived() {
+    public void consumerReceivesFlightAndSavesItToDb() throws InterruptedException {
+        // given
+        Map<String, Object> configs = new HashMap<>(KafkaTestUtils.producerProps(embeddedKafkaBroker));
+        Producer<String, String> producer = new DefaultKafkaProducerFactory<>(configs, new StringSerializer(), new StringSerializer()).createProducer();
+
+        // when
+        producer.send(new ProducerRecord<>(RAW_FLIGHT_DATA, null, getValidFlightJsonRecord()));
+        producer.flush();
+
+        // then
+        Flight validFlight = getExpectedValidFlight();
+        Awaitility.await().timeout(Durations.TEN_SECONDS)
+                .until(() -> !flightRepository.findAll().isEmpty());
+        Flight receivedFlight = flightRepository.findAll().get(0);
+        assertThat(receivedFlight).isEqualToIgnoringGivenFields(validFlight, "id");
+    }
+
+    @Test
+    public void consumerReceivesFlightAndProducerSendsItToNewTopic() {
         // given
         Map<String, Object> configs = new HashMap<>(KafkaTestUtils.producerProps(embeddedKafkaBroker));
         Producer<String, String> producer = new DefaultKafkaProducerFactory<>(configs, new StringSerializer(), new StringSerializer()).createProducer();
