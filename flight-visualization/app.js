@@ -1,8 +1,8 @@
 const bodyParser = require('body-parser');
 const express = require('express');
+const timeseries = require("timeseries-analysis");
 const fs = require('fs');
-var timeseries = require("timeseries-analysis");
-var request = require("request")
+const http = require('http');
 
 // var stats = [];
 
@@ -18,7 +18,9 @@ var request = require("request")
 //   }
 // })
 
-var app = express();
+const app = express();
+const PORT = 3000;
+const HOST = '0.0.0.0';
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -50,6 +52,7 @@ app.post('/ma', function (req, res) {
 });
 
 app.post('/lwma', function (req, res) {
+    console.log("lwma");
     var t = new timeseries.main(stats);
     var linearWeightedMA = t.lwma().chart({main: true});
     res.send(linearWeightedMA);
@@ -105,7 +108,14 @@ app.post('/forecast/chart', function (req, res) {
     res.send(forecast.data);
 });
 
-app.listen(8081);
+app.set('port', PORT);
+let server = http.createServer(app);
+app.listen(PORT);
+
+console.log(`Running on http://${HOST}:${PORT}`);
+
+eval(fs.readFileSync('src/consumer.js') + '');
+
 
 var stats = [
     [
@@ -233,3 +243,5 @@ var stats = [
         0
     ]
 ];
+
+module.exports = app;
