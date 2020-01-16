@@ -6,7 +6,7 @@ let Consumer = kafka.Consumer;
 let Offset = kafka.Offset;
 let Client = kafka.Client;
 let argv = require('optimist').argv;
-let topic = argv.topic || 'Visualization';
+let topic = 'processed-data';
 let consumerGroupName = 'visualization-group';
 
 let client = new Client('zookeeper:2181', consumerGroupName);
@@ -45,5 +45,18 @@ consumer.on('offsetOutOfRange', function (topic) {
         }
         let min = Math.min.apply(null, offsets[topic.topic][topic.partition]);
         consumer.setOffset(topic.topic, topic.partition, min);
+    });
+});
+
+const MongoClient = require('mongodb').MongoClient;
+const url = 'mongodb://localhost:27017/test';
+
+MongoClient.connect(url, function(err, db) {
+    console.log("mongooo");
+    const cursor = db.collection('flight').find(); // TODO: filter by date
+    let xd = 0;
+    cursor.each(function(err, doc) {
+        // console.log(doc);
+        console.log(xd++);
     });
 });

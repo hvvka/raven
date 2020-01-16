@@ -1,13 +1,15 @@
 package pl.edu.pwr.raven.flightconsumer.flight;
 
+import java.util.Date;
+
 public class FlightBuilder {
 
     private String flightSymbol;
     private String airline;
-    private String scheduledDeparture;
-    private String departure;
-    private String scheduledArrival;
-    private String arrival;
+    private Date scheduledDeparture;
+    private Date departure;
+    private Date scheduledArrival;
+    private Date arrival;
     private String flightStatus;
     private String airportFrom;
     private String airportTo;
@@ -27,22 +29,22 @@ public class FlightBuilder {
         return this;
     }
 
-    public FlightBuilder setScheduledDeparture(String scheduledDeparture) {
+    public FlightBuilder setScheduledDeparture(Date scheduledDeparture) {
         this.scheduledDeparture = scheduledDeparture;
         return this;
     }
 
-    public FlightBuilder setDeparture(String departure) {
+    public FlightBuilder setDeparture(Date departure) {
         this.departure = departure;
         return this;
     }
 
-    public FlightBuilder setScheduledArrival(String scheduledArrival) {
+    public FlightBuilder setScheduledArrival(Date scheduledArrival) {
         this.scheduledArrival = scheduledArrival;
         return this;
     }
 
-    public FlightBuilder setArrival(String arrival) {
+    public FlightBuilder setArrival(Date arrival) {
         this.arrival = arrival;
         return this;
     }

@@ -67,7 +67,7 @@ public class MessageListenerTests {
     }
 
     @Test
-    public void consumerReceivesFlightAndSavesItToDb() throws InterruptedException {
+    public void consumerReceivesFlightAndSavesItToDb() {
         // given
         Map<String, Object> configs = new HashMap<>(KafkaTestUtils.producerProps(embeddedKafkaBroker));
         Producer<String, String> producer = new DefaultKafkaProducerFactory<>(configs, new StringSerializer(), new StringSerializer()).createProducer();

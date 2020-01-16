@@ -19,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import pl.edu.pwr.raven.flightconsumer.flight.Flight;
 import pl.edu.pwr.raven.flightconsumer.flight.FlightBuilder;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -79,10 +80,10 @@ public class MessageProducerTests {
         return new FlightBuilder()
                 .setFlightSymbol("AAL - 203")
                 .setAirline("AMERICAN AIRLINES INC")
-                .setScheduledDeparture("2016-01-13 12:13:00")
-                .setDeparture("2016-01-13 12:13:00")
-                .setScheduledArrival("2016-01-13 21:30:00")
-                .setArrival("2016-01-13 21:30:00")
+                .setScheduledDeparture(new Date(1452683580000L))
+                .setDeparture(new Date(1452683580000L))
+                .setScheduledArrival(new Date(1452717000000L))
+                .setArrival(new Date(1452717000000L))
                 .setFlightStatus("Confirmed")
                 .setAirportFrom("SBPA")
                 .setAirportTo("KMIA")

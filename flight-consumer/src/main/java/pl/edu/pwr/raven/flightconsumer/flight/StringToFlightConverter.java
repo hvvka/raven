@@ -14,13 +14,14 @@ public class StringToFlightConverter {
 
     public static Flight convertToFlight(String input) throws ParseException {
         JSONObject json = new JSONObject(input);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         final String flightSymbol = json.getString("flightSymbol");
         final String airline = json.getString("airline");
-        final String scheduledDeparture = json.getString("scheduledDeparture");
-        final String departure = json.getString("departure");
-        final String scheduledArrival = json.getString("scheduledArrival");
-        final String arrival = json.getString("arrival");
+        final Date scheduledDeparture = format.parse(json.getString("scheduledDeparture"));
+        final Date departure = format.parse(json.getString("departure"));
+        final Date scheduledArrival = format.parse(json.getString("scheduledArrival"));
+        final Date arrival = format.parse(json.getString("arrival"));
         final String flightStatus = json.getString("flightStatus");
         final String airportFrom = json.getString("airportFrom");
         final String airportTo = json.getString("airportTo");
@@ -45,17 +46,12 @@ public class StringToFlightConverter {
                 .createFlight();
     }
 
-    private static double calculateRelativeDelay(String departure,
-                                                 String arrival,
+    private static double calculateRelativeDelay(Date departure,
+                                                 Date arrival,
                                                  double departureDelay,
-                                                 double arrivalDelay)
-            throws ParseException {
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        final Date departureDate = simpleDateFormat.parse(departure);
-        final Date arrivalDate = simpleDateFormat.parse(arrival);
-
-        final long diffInMillis = Math.abs(arrivalDate.getTime() - departureDate.getTime());
-        final long diff = TimeUnit.MINUTES.convert(diffInMillis, TimeUnit.MILLISECONDS);
+                                                 double arrivalDelay) {
+        long diffInMillis = Math.abs(arrival.getTime() - departure.getTime());
+        long diff = TimeUnit.MINUTES.convert(diffInMillis, TimeUnit.MILLISECONDS);
 
         return (departureDelay + arrivalDelay) / (double) (diff);
     }
