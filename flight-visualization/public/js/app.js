@@ -2,27 +2,24 @@ var app = angular.module('app', ['ui.router', 'ui.bootstrap']);
 
 app.run(function ($rootScope) {
     $rootScope.adaptChart = function (data, legend) {
-
-        var src = "";
-
-        if (legend != "Predykcja")
+        let src = "";
+        if (legend !== "Predykcja")
             src = data + "&chf=c,s,2b3e50|bg,s,2b3e50&chco=ff0000,0ce3ac&chdl=" + legend + "|Dane&chdls=0ce3ac,20&chxs=0N*,3498db";
         else
             src = data + "&chf=c,s,2b3e50|bg,s,2b3e50&chco=ff0000,0ce3ac,0000ff&chdl=" + legend + "|Dane|Start prognozy&chdls=0ce3ac,20&chxs=0N*,3498db";
 
-        if (legend == "Noise")
+        if (legend === "Noise")
             src = src.replace("|Dane", "");
 
         return src.replace("800x200", "1000x300");
     }
-
 });
 
 app.controller('homeController', function ($scope, $http) {
-    var stats = [];
-    var xhttp = new XMLHttpRequest();
+    let stats = [];
+    const xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
+        if (this.readyState === 4 && this.status === 200) {
             stats = JSON.parse(this.responseText);
             google.charts.load('current', {'packages': ['corechart']});
             google.charts.setOnLoadCallback(drawChart);
@@ -32,19 +29,9 @@ app.controller('homeController', function ($scope, $http) {
     xhttp.send();
 
     function drawChart() {
+        const data = google.visualization.arrayToDataTable(stats);
 
-        // remove Saturday
-        // var date, dateFormat;
-        // for (var i = 1; i < stats.length; i++) {
-        //   date = stats[i][0].replace("/17", "/2017");
-        //   dateFormat = new Date(date.split('/')[2] + "-" + date.split('/')[1] + "-" + date.split('/')[0]);
-        //   if (dateFormat.getDay() == 6)
-        //   stats.splice(i, 1);
-        // }
-
-        var data = google.visualization.arrayToDataTable(stats);
-
-        var options = {
+        const options = {
             title: 'Sumaryczny czas opóźnień na dany dzień',
             curveType: 'function',
             titleTextStyle: {color: '#FFF'},
@@ -59,7 +46,7 @@ app.controller('homeController', function ($scope, $http) {
             }
         };
 
-        var chart = new google.visualization.LineChart(document.getElementById('lineChart'));
+        const chart = new google.visualization.LineChart(document.getElementById('lineChart'));
         chart.draw(data, options);
     }
 
@@ -88,7 +75,7 @@ app.controller('statsController', function ($scope, $rootScope, $http, $statePar
 
             $http({
                 method: 'POST',
-                url: "/" + $stateParams.stats + "/chart",
+                url: "/forecast/chart",
                 headers: {"Content-Type": "application/json"},
                 data: {period: 10} // not used
             }).then(function (response) {
@@ -109,7 +96,7 @@ app.controller('statsController', function ($scope, $rootScope, $http, $statePar
     }).then(function (response) {
         $scope.details = "<br><br>";
         var data = response.data;
-        for (i in data)
+        for (let i in data)
             $scope.details += '<h3><span class="text-warning">' + i + ':</span> <span class="text-success">' + data[i] + '</h3>';
         $scope.details = $sce.trustAsHtml($scope.details);
     });

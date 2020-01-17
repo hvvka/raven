@@ -1,6 +1,7 @@
 'use strict';
 
 let kafka = require('kafka-node');
+let _ = require('lodash');
 
 let Consumer = kafka.Consumer;
 let Offset = kafka.Offset;
@@ -25,7 +26,7 @@ client.on('ready', function () {
 let io = require('socket.io').listen(server);
 consumer.on('message', function (message) {
     const messageString = message.value;
-    console.log(messageString);
+    // console.log(messageString);
     io.sockets.emit('news', messageString);
 });
 
@@ -51,12 +52,15 @@ consumer.on('offsetOutOfRange', function (topic) {
 const MongoClient = require('mongodb').MongoClient;
 const url = 'mongodb://localhost:27017/test';
 
-MongoClient.connect(url, function(err, db) {
-    console.log("mongooo");
-    const cursor = db.collection('flight').find(); // TODO: filter by date
-    let xd = 0;
-    cursor.each(function(err, doc) {
-        // console.log(doc);
-        console.log(xd++);
-    });
+MongoClient.connect(url, async function (err, db) {
+    let flights = await db.collection('Flights')
+        .find()
+        .sort({departure: 1})
+        .toArray();
+    flights = flights.slice(Math.max(flights.length - 30, 1)); // get latest 30 departures
+    stats = _.map(flights, f =>
+        [`${f.departure.getFullYear()}-${("0" + f.departure.getMonth() + 1).slice(-2)}-${("0" + f.departure.getDate()).slice(-2)} ${("0" + f.departure.getHours()).slice(-2)}:${("0" + f.departure.getMinutes()).slice(-2)}:${("0" + f.departure.getSeconds()).slice(-2)}`,
+            f.relativeDelay]);
+
+    // TODO: Save to status.json or home should return it
 });
