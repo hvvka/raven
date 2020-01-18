@@ -70,20 +70,11 @@ app.controller('statsController', function ($scope, $rootScope, $http, $statePar
                 headers: {"Content-Type": "application/json"},
                 data: {from: $scope.flights.from, to: $scope.flights.to}
             }).then(response => {
-                $scope.statsSrc = $rootScope.adaptChart(response.data, $scope.legend);
-            });
-
-            $http({
-                method: 'POST',
-                url: "/forecast/chart",
-                headers: {"Content-Type": "application/json"},
-                data: {from: $scope.flights.from, to: $scope.flights.to}
-            }).then(response => {
-                if (response) {
-                    $scope.items = [["Data wylotu", "Względne opóźnienie", "Prognozowane względne opóźnienie"], ...response.data];
+                $scope.statsSrc = $rootScope.adaptChart(response.data.chart, $scope.legend);
+                if (response.data.table) {
+                    $scope.items = [["Data wylotu", "Sumaryczne opóźnienie", "Prognozowane sumaryczne opóźnienie"], ...response.data.table];
                 }
             });
-
         });
     };
     $scope.getData();
@@ -101,7 +92,7 @@ app.controller('statsController', function ($scope, $rootScope, $http, $statePar
     });
 
     $scope.flights = {
-        from: new Date(2016, 0, 4),
-        to: new Date(2016, 0, 14),
+        from: new Date(2016, 0, 1),
+        to: new Date(2016, 0, 15),
     };
 });
