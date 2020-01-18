@@ -58,8 +58,8 @@ app.controller('statsController', function ($scope, $rootScope, $http, $statePar
         $http({
             method: 'GET',
             url: 'partials/' + $stateParams.stats + '.json'
-        }).then(function (response) {
-            var data = response.data;
+        }).then(response => {
+            const data = response.data;
             $scope.title = data.title;
             $scope.description = $sce.trustAsHtml(data.description);
             $scope.legend = data.legend;
@@ -68,21 +68,21 @@ app.controller('statsController', function ($scope, $rootScope, $http, $statePar
                 method: 'POST',
                 url: "/" + $stateParams.stats,
                 headers: {"Content-Type": "application/json"},
-                data: {period: 10} // not used
-            }).then(function (response) {
+                data: {from: $scope.flights.from, to: $scope.flights.to}
+            }).then(response => {
                 $scope.statsSrc = $rootScope.adaptChart(response.data, $scope.legend);
             });
 
-            $http({
-                method: 'POST',
-                url: "/forecast/chart",
-                headers: {"Content-Type": "application/json"},
-                data: {period: 10} // not used
-            }).then(function (response) {
-                if (response) {
-                    $scope.items = response.data;
-                }
-            });
+            // $http({
+            //     method: 'POST',
+            //     url: "/forecast/chart",
+            //     headers: {"Content-Type": "application/json"},
+            //     data: {from: $scope.flights.from, to: $scope.flights.to}
+            // }).then(response => {
+            //     if (response) {
+            //         $scope.items = response.data;
+            //     }
+            // });
 
         });
     };
@@ -93,53 +93,16 @@ app.controller('statsController', function ($scope, $rootScope, $http, $statePar
     $http({
         method: 'GET',
         url: '/details'
-    }).then(function (response) {
+    }).then(response => {
         $scope.details = "<br><br>";
-        var data = response.data;
+        const data = response.data;
         for (let i in data)
             $scope.details += '<h3><span class="text-warning">' + i + ':</span> <span class="text-success">' + data[i] + '</h3>';
         $scope.details = $sce.trustAsHtml($scope.details);
     });
 
+    $scope.flights = {
+        from: new Date(2016, 0, 4),
+        to: new Date(2016, 0, 14),
+    };
 });
-
-app.controller('DateController', ['$scope', function ($scope) {
-    $scope.example = {
-        value: new Date(2015, 10, 10),
-        minDate: new Date(2015, 10, 01),
-        maxDate: new Date(2015, 10, 30)
-    };
-    $scope.Compare = function (DateA, DateB) {
-        var a = new Date(DateA);
-        var b = new Date(DateB);
-        var msDateA = Date.UTC(a.getFullYear(), a.getMonth() - 1, a.getDate());
-        var msDateB = Date.UTC(b.getFullYear(), b.getMonth() - 1, b.getDate());
-
-        if (parseFloat(msDateA) < parseFloat(msDateB)) {
-            return -1;  // less than
-        } else if (parseFloat(msDateA) == parseFloat(msDateB))
-            return 0;  // equal
-        else if (parseFloat(msDateA) > parseFloat(msDateB))
-            return 1;  // greater than
-        else
-            return null;  // error
-    };
-    $scope.getDate = function (dateA) {
-        var dt = dateA.getFullYear() + "-" + (dateA.getMonth()) + "-" + (((dateA.getDate()).toString().length == 1)
-            ? "0" + dateA.getDate() : dateA.getDate());
-        return dt;
-    };
-    $scope.greaterDate = function () {
-        var dateA = new Date($scope.example.maxDate);
-        var dt = dateA.getFullYear() + "-" + (dateA.getMonth()) + "-" + (((dateA.getDate()).toString().length == 1)
-            ? "0" + dateA.getDate() : dateA.getDate());
-        return ($scope.Compare($scope.example.value, dt) == 1) ? true : false;
-    };
-    $scope.lesserDate = function () {
-        var dateA = new Date($scope.example.minDate);
-        var dt = dateA.getFullYear() + "-" + (dateA.getMonth()) + "-" + (((dateA.getDate()).toString().length == 1)
-            ? "0" + dateA.getDate() : dateA.getDate());
-        return ($scope.Compare($scope.example.value, dt) == -1) ? true : false;
-    };
-
-}]);

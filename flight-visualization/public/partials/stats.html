@@ -3,23 +3,16 @@
     <p class="description" ng-bind-html="description"></p>
 </div>
 
-<form name="myForm" ng-controller="DateController">
-    <label for="exampleInput">From</label>
-    <input id="exampleInput" name="input" ng-model="example.value" placeholder="yyyy-MM-dd"
+<form name="dateInputRangeForm" ng-submit="getData()">
+    <label for="dateFrom">From</label>
+    <input id="dateFrom" name="input" ng-model="flights.from" placeholder="yyyy-MM-dd"
            required type="date"/>
 
-    <p ng-if='!myForm.input.$valid'
-       style="font-family:Arial;color:red;background:steelblue;padding:3px;width:350px;">Select valid date</p>
-    <p ng-if='!!myForm.$error.required'
-       style="font-family:Arial;color:#ffffff;background:blue;padding:3px;width:350px;">Date is required</p>
+    <label for="dateTo">To</label>
+    <input id="dateTo" name="input" ng-model="flights.to" placeholder="yyyy-MM-dd"
+           required type="date"/>
 
-    <p ng-if='greaterDate()'
-       style="font-family:Arial;color:red;background:steelblue;padding:3px;width:350px;">Date should be less than
-        {{getDate(example.maxDate)}}</p>
-
-    <p ng-if='lesserDate()'
-       style="font-family:Arial;color:red;background:steelblue;padding:3px;width:350px;">Date should be greater than
-        {{getDate(example.minDate)}}</p>
+    <input type="submit" value="Submit"/>
 </form>
 
 <div class="text-left" id="details" ng-bind-html="details"></div>

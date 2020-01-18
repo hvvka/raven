@@ -3,6 +3,8 @@ const express = require('express');
 const timeseries = require("timeseries-analysis");
 const fs = require('fs');
 const http = require('http');
+const _ = require('lodash');
+const MongoClient = require('mongodb').MongoClient;
 
 const app = express();
 const PORT = 3000;
@@ -12,16 +14,19 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-app.get('/', function (req, res) {
+app.get('/', async function (req, res) {
+    let stats = await fetchStatsFind({});
     res.sendFile("public/index.html", {root: __dirname});
 });
 
-app.get('/data', function (req, res) {
+app.get('/data', async function (req, res) {
+    let stats = await fetchStatsFind({});
     res.send(stats);
 });
 
 
-app.get('/details', function (req, res) {
+app.get('/details', async function (req, res) {
+    let stats = await fetchStatsFind({});
     const t = new timeseries.main(stats);
     const details = {};
     details["Mean"] = t.mean();
@@ -31,23 +36,27 @@ app.get('/details', function (req, res) {
     res.send(details);
 });
 
-app.post('/home', function (req, res) {
+app.post('/home', async function (req, res) {
+    let stats = await fetchStatsFind({});
     res.send(stats);
 });
 
-app.post('/ma', function (req, res) {
+app.post('/ma', async function (req, res) {
+    let stats = await fetchStatsFind({});
     const t = new timeseries.main(stats);
     const movingAverage = t.ma().chart({main: true});
     res.send(movingAverage);
 });
 
-app.post('/lwma', function (req, res) {
+app.post('/lwma', async function (req, res) {
+    let stats = await fetchStatsFind({});
     const t = new timeseries.main(stats);
     const linearWeightedMA = t.lwma().chart({main: true});
     res.send(linearWeightedMA);
 });
 
-app.post('/trend', function (req, res) {
+app.post('/trend', async function (req, res) {
+    let stats = await fetchStatsFind({});
     const t = new timeseries.main(stats);
     const trend = t.dsp_itrend({
         alpha: 0.5
@@ -55,7 +64,8 @@ app.post('/trend', function (req, res) {
     res.send(trend);
 });
 
-app.post('/smoothing', function (req, res) {
+app.post('/smoothing', async function (req, res) {
+    let stats = await fetchStatsFind({});
     const t = new timeseries.main(stats);
     const smooth = t.smoother({
         period: 5
@@ -70,7 +80,11 @@ app.post('/noise', function (req, res) {
     res.send(noise);
 });
 
-app.post('/forecast', function (req, res) {
+app.post('/forecast', async function (req, res) {
+    const dateFrom = req.body.from;
+    const dateTo = req.body.to;
+    let stats = await fetchStats(dateFrom, dateTo);
+    console.log(stats);
     const t = new timeseries.main(stats);
     t.smoother({period: 1}).save('smoothed');
     const bestSettings = t.regression_forecast_optimize();
@@ -83,7 +97,11 @@ app.post('/forecast', function (req, res) {
     res.send(forecastChart);
 });
 
-app.post('/forecast/chart', function (req, res) {
+app.post('/forecast/chart', async (req, res) => {
+    console.log(req.body);
+    const dateFrom = req.body.from;
+    const dateTo = req.body.to;
+    let stats = await fetchStats(dateFrom, dateTo);
     const t = new timeseries.main(stats);
     t.smoother({period: 1}).save('smoothed');
     const bestSettings = t.regression_forecast_optimize();
@@ -92,8 +110,6 @@ app.post('/forecast/chart', function (req, res) {
         degree: bestSettings.degree,
         method: bestSettings.method
     });
-    // console.log(forecast);
-    // console.log(forecast.saved[0].data);
     res.send(forecast.data);
 });
 
@@ -105,6 +121,28 @@ console.log(`Running on http://${HOST}:${PORT}`);
 
 eval(fs.readFileSync('consumer.js') + '');
 
-stats = [];
+/* MongoDb */
+
+const fetchStatsFind = async (condition) => {
+    const url = 'mongodb://localhost:27017/test';
+    const db = await MongoClient.connect(url);
+    const dbo = db.db("test");
+    const result = await dbo.collection('Flights')
+        .find(condition)
+        .sort({departure: 1})
+        .toArray();
+    return _.map(result, f =>
+        [`${f.departure.getFullYear()}-${("0" + f.departure.getMonth() + 1).slice(-2)}-${("0" + f.departure.getDate()).slice(-2)} ${("0" + f.departure.getHours()).slice(-2)}:${("0" + f.departure.getMinutes()).slice(-2)}:${("0" + f.departure.getSeconds()).slice(-2)}`,
+            f.relativeDelay]);
+};
+
+const fetchStats = async (dateFrom, dateTo) => {
+    return fetchStatsFind({
+        departure: {
+            $gte: new Date(dateFrom),
+            $lt: new Date(dateTo)
+        }
+    });
+};
 
 module.exports = app;
