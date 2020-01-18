@@ -102,3 +102,44 @@ app.controller('statsController', function ($scope, $rootScope, $http, $statePar
     });
 
 });
+
+app.controller('DateController', ['$scope', function ($scope) {
+    $scope.example = {
+        value: new Date(2015, 10, 10),
+        minDate: new Date(2015, 10, 01),
+        maxDate: new Date(2015, 10, 30)
+    };
+    $scope.Compare = function (DateA, DateB) {
+        var a = new Date(DateA);
+        var b = new Date(DateB);
+        var msDateA = Date.UTC(a.getFullYear(), a.getMonth() - 1, a.getDate());
+        var msDateB = Date.UTC(b.getFullYear(), b.getMonth() - 1, b.getDate());
+
+        if (parseFloat(msDateA) < parseFloat(msDateB)) {
+            return -1;  // less than
+        } else if (parseFloat(msDateA) == parseFloat(msDateB))
+            return 0;  // equal
+        else if (parseFloat(msDateA) > parseFloat(msDateB))
+            return 1;  // greater than
+        else
+            return null;  // error
+    };
+    $scope.getDate = function (dateA) {
+        var dt = dateA.getFullYear() + "-" + (dateA.getMonth()) + "-" + (((dateA.getDate()).toString().length == 1)
+            ? "0" + dateA.getDate() : dateA.getDate());
+        return dt;
+    };
+    $scope.greaterDate = function () {
+        var dateA = new Date($scope.example.maxDate);
+        var dt = dateA.getFullYear() + "-" + (dateA.getMonth()) + "-" + (((dateA.getDate()).toString().length == 1)
+            ? "0" + dateA.getDate() : dateA.getDate());
+        return ($scope.Compare($scope.example.value, dt) == 1) ? true : false;
+    };
+    $scope.lesserDate = function () {
+        var dateA = new Date($scope.example.minDate);
+        var dt = dateA.getFullYear() + "-" + (dateA.getMonth()) + "-" + (((dateA.getDate()).toString().length == 1)
+            ? "0" + dateA.getDate() : dateA.getDate());
+        return ($scope.Compare($scope.example.value, dt) == -1) ? true : false;
+    };
+
+}]);
