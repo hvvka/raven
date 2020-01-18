@@ -94,7 +94,7 @@ app.post('/forecast', async function (req, res) {
     const forecast = t.sliding_regression_forecast({
         sample: 3,
         degree: 1,
-        method: 'ARLeastSquare'
+        method: req.body.method
     });
     const result = {
         table: stats.map((row, i) => [...row, forecast.data[i][1].toString()]),

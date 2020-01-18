@@ -53,7 +53,14 @@ app.controller('homeController', function ($scope, $http) {
 });
 
 app.controller('statsController', function ($scope, $rootScope, $http, $stateParams, $sce) {
-
+    $scope.models = [{
+        name: "Metoda najmniejszych kwadratów (MNK)",
+        method: "ARLeastSquare"
+    }, {name: "Metoda maksymalnej entropii (MaxEnt)", method: "ARMaxEntropy"}];
+    let currentMethod = $scope.models[0].method;
+    $scope.getSelectedModelMethod = function (selectedModel) {
+        if (selectedModel) currentMethod = selectedModel.method;
+    };
     $scope.getData = function () {
         $http({
             method: 'GET',
@@ -68,7 +75,7 @@ app.controller('statsController', function ($scope, $rootScope, $http, $statePar
                 method: 'POST',
                 url: "/" + $stateParams.stats,
                 headers: {"Content-Type": "application/json"},
-                data: {from: $scope.flights.from, to: $scope.flights.to}
+                data: {from: $scope.flights.from, to: $scope.flights.to, method: currentMethod}
             }).then(response => {
                 $scope.statsSrc = $rootScope.adaptChart(response.data.chart, $scope.legend);
                 if (response.data.table) {

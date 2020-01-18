@@ -12,6 +12,12 @@
     <input id="dateTo" name="input" ng-model="flights.to" placeholder="yyyy-MM-dd"
            required type="date"/>
 
+    <label for="model">Model</label>
+    <select id="model" ng-change="getSelectedModelMethod(selectedModel)" ng-init="selectedModel = models[0]"
+            ng-model="selectedModel" ng-options="x.name for x in models">
+    </select>
+
+
     <input type="submit" value="Submit"/>
 </form>
 
