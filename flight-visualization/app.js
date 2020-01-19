@@ -87,9 +87,11 @@ app.post('/noise', async function (req, res) {
 app.post('/traffic', async function (req, res) {
     const dateFrom = req.body.from;
     const dateTo = req.body.to;
+    const arrivalDepartureFlights = await getArrivalDepartureSumForDay(dateFrom, dateTo);
+    const delayedCancelledFlights = await getDelayedCancelledSumForDay(dateFrom, dateTo);
     const result = {
-        table: [["Data wylotu", "Łączna liczba lotów"],
-            ...await getArrivalDepartureSumForDay(dateFrom, dateTo)]
+        table: [["Data wylotu", "Łączna liczba lotów", "Suma lotów opóźnionych i anulowanych"],
+            ...arrivalDepartureFlights.map((f, i) => [...f, delayedCancelledFlights[i][1]])]
     };
     res.send(result);
 });
@@ -149,7 +151,7 @@ const getArrivalDepartureSumForDay = async (dateFrom, dateTo) => {
         f.departure = getDate(f.departure);
         f.arrival = getDate(f.arrival)
     });
-    let flightsByDay = getDates(new Date(dateFrom), new Date(dateTo));
+    let flightsByDay = getDatesBetween(new Date(dateFrom), new Date(dateTo));
 
     flights.forEach(f => {
         flightsByDay.find(row => row[0] === f.departure)[1]++;
@@ -158,7 +160,31 @@ const getArrivalDepartureSumForDay = async (dateFrom, dateTo) => {
     return flightsByDay;
 };
 
-const getDates = (startDate, endDate) => {
+const getDelayedCancelledSumForDay = async (dateFrom, dateTo) => {
+    let flights = await findFlights({
+        departure: {
+            $gte: new Date(dateFrom),
+            $lt: new Date(dateTo)
+        },
+        $or: [
+            {relativeDelay: {$gt: 0}},
+            {flightStatus: {$eq: "Cancelled"}}
+        ]
+    });
+    flights.forEach(f => {
+        f.departure = getDate(f.departure);
+        f.arrival = getDate(f.arrival)
+    });
+    let flightsByDay = getDatesBetween(new Date(dateFrom), new Date(dateTo));
+
+    flights.forEach(f => {
+        flightsByDay.find(row => row[0] === f.departure)[1]++;
+        flightsByDay.find(row => row[0] === f.arrival)[1]++;
+    });
+    return flightsByDay;
+};
+
+const getDatesBetween = (startDate, endDate) => {
     let dates = [],
         date = startDate,
         addDays = function (days) {
