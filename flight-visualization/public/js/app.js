@@ -2,13 +2,13 @@ var app = angular.module('app', ['ui.router', 'ui.bootstrap']);
 
 app.run(function ($rootScope) {
     $rootScope.adaptChart = function (data, legend) {
-        let src = "";
+        let src;
         if (legend !== "Predykcja")
             src = data + "&chf=c,s,2b3e50|bg,s,2b3e50&chco=ff0000,0ce3ac&chdl=" + legend + "|Dane&chdls=0ce3ac,20&chxs=0N*,3498db";
         else
             src = data + "&chf=c,s,2b3e50|bg,s,2b3e50&chco=ff0000,0ce3ac,0000ff&chdl=" + legend + "|Dane|Start prognozy&chdls=0ce3ac,20&chxs=0N*,3498db";
 
-        if (legend === "Noise")
+        if (legend === "Szum")
             src = src.replace("|Dane", "");
 
         return src.replace("800x200", "1000x300");
@@ -77,9 +77,12 @@ app.controller('statsController', function ($scope, $rootScope, $http, $statePar
                 headers: {"Content-Type": "application/json"},
                 data: {from: $scope.flights.from, to: $scope.flights.to, method: currentMethod}
             }).then(response => {
-                $scope.statsSrc = $rootScope.adaptChart(response.data.chart, $scope.legend);
+                console.log(response.data);
+                if (response.data.chart) {
+                    $scope.statsSrc = $rootScope.adaptChart(response.data.chart, $scope.legend);
+                }
                 if (response.data.table) {
-                    $scope.items = [["Data wylotu", "Sumaryczne opóźnienie", "Prognozowane sumaryczne opóźnienie"], ...response.data.table];
+                    $scope.items = response.data.table;
                 }
             });
         });

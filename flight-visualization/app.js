@@ -19,13 +19,13 @@ app.get('/', async function (req, res) {
 });
 
 app.get('/data', async function (req, res) {
-    let stats = mapFlightsToForecastStats(await findFlight({}));
+    let stats = mapFlightsToForecastStats(await findFlights({}));
     res.send(stats);
 });
 
 
 app.get('/details', async function (req, res) {
-    let stats = mapFlightsToForecastStats(await findFlight({}));
+    let stats = mapFlightsToForecastStats(await findFlights({}));
     const t = new timeseries.main(stats);
     const details = {};
     details["Mean"] = t.mean();
@@ -37,26 +37,26 @@ app.get('/details', async function (req, res) {
 
 // TODO: Delete Home
 app.post('/home', async function (req, res) {
-    let stats = mapFlightsToForecastStats(await findFlight({}));
+    let stats = mapFlightsToForecastStats(await findFlights({}));
     res.send(stats);
 });
 
 app.post('/ma', async function (req, res) {
-    let stats = mapFlightsToForecastStats(await findFlight({}));
+    let stats = mapFlightsToForecastStats(await findFlights({}));
     const t = new timeseries.main(stats);
     const result = {chart: t.ma().chart({main: true})};
     res.send(result);
 });
 
 app.post('/lwma', async function (req, res) {
-    let stats = mapFlightsToForecastStats(await findFlight({}));
+    let stats = mapFlightsToForecastStats(await findFlights({}));
     const t = new timeseries.main(stats);
     const result = {chart: t.lwma().chart({main: true})};
     res.send(result);
 });
 
 app.post('/trend', async function (req, res) {
-    let stats = mapFlightsToForecastStats(await findFlight({}));
+    let stats = mapFlightsToForecastStats(await findFlights({}));
     const t = new timeseries.main(stats);
     const result = {
         chart: t.dsp_itrend({
@@ -67,7 +67,7 @@ app.post('/trend', async function (req, res) {
 });
 
 app.post('/smoothing', async function (req, res) {
-    let stats = mapFlightsToForecastStats(await findFlight({}));
+    let stats = mapFlightsToForecastStats(await findFlights({}));
     const t = new timeseries.main(stats);
     const result = {
         chart: t.smoother({
@@ -78,9 +78,19 @@ app.post('/smoothing', async function (req, res) {
 });
 
 app.post('/noise', async function (req, res) {
-    let stats = mapFlightsToForecastStats(await findFlight({}));
+    let stats = mapFlightsToForecastStats(await findFlights({}));
     const t = new timeseries.main(stats);
     const result = {chart: t.smoother({period: 10}).noiseData().smoother({period: 5}).chart()};
+    res.send(result);
+});
+
+app.post('/traffic', async function (req, res) {
+    const dateFrom = req.body.from;
+    const dateTo = req.body.to;
+    const result = {
+        table: [["Data wylotu", "Łączna liczba lotów"],
+            ...await getArrivalDepartureSumForDay(dateFrom, dateTo)]
+    };
     res.send(result);
 });
 
@@ -97,7 +107,8 @@ app.post('/forecast', async function (req, res) {
         method: req.body.method
     });
     const result = {
-        table: stats.map((row, i) => [...row, forecast.data[i][1].toString()]),
+        table: [["Data wylotu", "Sumaryczne opóźnienie", "Prognozowane sumaryczne opóźnienie"],
+            ...stats.map((row, i) => [...row, forecast.data[i][1].toString()])],
         chart: forecast.chart({main: false}) + "&chm=s,0000ff,0," + forecast.sample + ",8.0"
     };
     res.send(result);
@@ -114,7 +125,7 @@ eval(fs.readFileSync('consumer.js') + '');
 /* MongoDb */
 
 const findFlightBetweenDates = async (dateFrom, dateTo) => {
-    return findFlight({
+    return findFlights({
         departure: {
             $gte: new Date(dateFrom),
             $lt: new Date(dateTo)
@@ -122,7 +133,7 @@ const findFlightBetweenDates = async (dateFrom, dateTo) => {
     });
 };
 
-const findFlight = async (condition) => {
+const findFlights = async (condition) => {
     const url = 'mongodb://localhost:27017/test';
     const db = await MongoClient.connect(url);
     const dbo = db.db("test");
@@ -130,6 +141,41 @@ const findFlight = async (condition) => {
         .find(condition)
         .sort({departure: 1})
         .toArray();
+};
+
+const getArrivalDepartureSumForDay = async (dateFrom, dateTo) => {
+    let flights = await findFlightBetweenDates(dateFrom, dateTo);
+    flights.forEach(f => {
+        f.departure = getDate(f.departure);
+        f.arrival = getDate(f.arrival)
+    });
+    let flightsByDay = getDates(new Date(dateFrom), new Date(dateTo));
+
+    flights.forEach(f => {
+        flightsByDay.find(row => row[0] === f.departure)[1]++;
+        flightsByDay.find(row => row[0] === f.arrival)[1]++;
+    });
+    return flightsByDay;
+};
+
+const getDates = (startDate, endDate) => {
+    let dates = [],
+        date = startDate,
+        addDays = function (days) {
+            date = new Date(this.valueOf());
+            date.setDate(date.getDate() + days);
+            return date;
+        };
+    while (date <= endDate) {
+        const stringDate = `${date.getFullYear()}-${("0" + date.getMonth() + 1).slice(-2)}-${("0" + date.getDate()).slice(-2)}`;
+        dates.push([stringDate, 0]);
+        date = addDays.call(date, 1);
+    }
+    return dates;
+};
+
+const getDate = (date) => {
+    return `${date.getFullYear()}-${("0" + date.getMonth() + 1).slice(-2)}-${("0" + date.getDate()).slice(-2)}`;
 };
 
 const mapFlightsToForecastStats = result => _.map(result, f =>

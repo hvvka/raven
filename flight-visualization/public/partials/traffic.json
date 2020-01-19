@@ -1,0 +1,5 @@
+{
+  "title": "Obciążenie lotnisk",
+  "description": "Dzięki spływającym danym można wyznaczyć obciążenie lotniska, definiowane jako suma przylotów i odlotów w ciągu dnia, i sprawdzić korelację z liczbą anulowanych i opóźnionych z niego lotów.",
+  "legend": "Obciążenie lotnisk"
+}
