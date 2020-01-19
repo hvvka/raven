@@ -43,10 +43,19 @@ app.post('/home', async function (req, res) {
     res.send(stats);
 });
 
+app.post('/airlines', async function (req, res) {
+    const dateFrom = req.body.from;
+    const dateTo = req.body.to;
+    let flights = await findFlightBetweenDates(dateFrom, dateTo);
+    res.send(_.uniq(flights.map(f => f.airline)));
+});
+
 app.post('/ma', async function (req, res) {
     const dateFrom = req.body.from;
     const dateTo = req.body.to;
-    let stats = mapFlightsToForecastStats(await findFlightBetweenDates(dateFrom, dateTo));
+    const airline = req.body.airline;
+    const flights = airline ? await findFlightBetweenDatesAndForAirline(dateFrom, dateTo, airline) : await findFlightBetweenDates(dateFrom, dateTo);
+    const stats = mapFlightsToForecastStats(flights);
     const t = new timeseries.main(stats);
     const result = {chart: t.ma().chart({main: true})};
     res.send(result);
@@ -55,7 +64,9 @@ app.post('/ma', async function (req, res) {
 app.post('/lwma', async function (req, res) {
     const dateFrom = req.body.from;
     const dateTo = req.body.to;
-    let stats = mapFlightsToForecastStats(await findFlightBetweenDates(dateFrom, dateTo));
+    const airline = req.body.airline;
+    const flights = airline ? await findFlightBetweenDatesAndForAirline(dateFrom, dateTo, airline) : await findFlightBetweenDates(dateFrom, dateTo);
+    const stats = mapFlightsToForecastStats(flights);
     const t = new timeseries.main(stats);
     const result = {chart: t.lwma().chart({main: true})};
     res.send(result);
@@ -64,7 +75,9 @@ app.post('/lwma', async function (req, res) {
 app.post('/trend', async function (req, res) {
     const dateFrom = req.body.from;
     const dateTo = req.body.to;
-    let stats = mapFlightsToForecastStats(await findFlightBetweenDates(dateFrom, dateTo));
+    const airline = req.body.airline;
+    const flights = airline ? await findFlightBetweenDatesAndForAirline(dateFrom, dateTo, airline) : await findFlightBetweenDates(dateFrom, dateTo);
+    const stats = mapFlightsToForecastStats(flights);
     const t = new timeseries.main(stats);
     const result = {
         chart: t.dsp_itrend({
@@ -77,7 +90,9 @@ app.post('/trend', async function (req, res) {
 app.post('/smoothing', async function (req, res) {
     const dateFrom = req.body.from;
     const dateTo = req.body.to;
-    let stats = mapFlightsToForecastStats(await findFlightBetweenDates(dateFrom, dateTo));
+    const airline = req.body.airline;
+    const flights = airline ? await findFlightBetweenDatesAndForAirline(dateFrom, dateTo, airline) : await findFlightBetweenDates(dateFrom, dateTo);
+    const stats = mapFlightsToForecastStats(flights);
     const t = new timeseries.main(stats);
     const result = {
         chart: t.smoother({
@@ -90,7 +105,9 @@ app.post('/smoothing', async function (req, res) {
 app.post('/noise', async function (req, res) {
     const dateFrom = req.body.from;
     const dateTo = req.body.to;
-    let stats = mapFlightsToForecastStats(await findFlightBetweenDates(dateFrom, dateTo));
+    const airline = req.body.airline;
+    const flights = airline ? await findFlightBetweenDatesAndForAirline(dateFrom, dateTo, airline) : await findFlightBetweenDates(dateFrom, dateTo);
+    const stats = mapFlightsToForecastStats(flights);
     const t = new timeseries.main(stats);
     const result = {chart: t.smoother({period: 10}).noiseData().smoother({period: 5}).chart()};
     res.send(result);
@@ -111,7 +128,8 @@ app.post('/traffic', async function (req, res) {
 app.post('/forecast', async function (req, res) {
     const dateFrom = req.body.from;
     const dateTo = req.body.to;
-    const flights = await findFlightBetweenDates(dateFrom, dateTo);
+    const airline = req.body.airline;
+    const flights = airline ? await findFlightBetweenDatesAndForAirline(dateFrom, dateTo, airline) : await findFlightBetweenDates(dateFrom, dateTo);
     const stats = mapFlightsToForecastStats(flights);
     const t = new timeseries.main(stats);
     t.smoother({period: 1}).save('smoothed');
@@ -144,6 +162,16 @@ const findFlightBetweenDates = async (dateFrom, dateTo) => {
             $gte: new Date(dateFrom),
             $lt: new Date(dateTo)
         }
+    });
+};
+
+const findFlightBetweenDatesAndForAirline = async (dateFrom, dateTo, airline) => {
+    return findFlights({
+        departure: {
+            $gte: new Date(dateFrom),
+            $lt: new Date(dateTo)
+        },
+        airline: {$eq: airline}
     });
 };
 

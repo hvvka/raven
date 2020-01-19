@@ -17,6 +17,10 @@
             ng-model="selectedModel" ng-options="x.name for x in models">
     </select>
 
+    <label for="airline">Linia lotnicza</label>
+    <select id="airline" ng-change="getSelectedAirline(selectedAirline)"
+            ng-model="selectedAirline" ng-options="x for x in airlines">
+    </select>
 
     <input type="submit" value="Submit"/>
 </form>

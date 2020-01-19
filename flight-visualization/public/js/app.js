@@ -58,9 +58,16 @@ app.controller('statsController', function ($scope, $rootScope, $http, $statePar
         method: "ARLeastSquare"
     }, {name: "Metoda maksymalnej entropii (MaxEnt)", method: "ARMaxEntropy"}];
     let currentMethod = $scope.models[0].method;
-    $scope.getSelectedModelMethod = function (selectedModel) {
+    $scope.getSelectedModelMethod = selectedModel => {
         if (selectedModel) currentMethod = selectedModel.method;
     };
+
+    $scope.airlines = [];
+    let currentAirline;
+    $scope.getSelectedAirline = selectedAirline => {
+        currentAirline = selectedAirline;
+    };
+
     $scope.getData = function () {
         $http({
             method: 'GET',
@@ -75,14 +82,24 @@ app.controller('statsController', function ($scope, $rootScope, $http, $statePar
                 method: 'POST',
                 url: "/" + $stateParams.stats,
                 headers: {"Content-Type": "application/json"},
-                data: {from: $scope.flights.from, to: $scope.flights.to, method: currentMethod}
+                data: {from: $scope.flights.from, to: $scope.flights.to, method: currentMethod, airline: currentAirline}
             }).then(response => {
+                // if (response.data.airlines) $scope.airlines = response.data.airlines;
                 if (response.data.chart) {
                     $scope.statsSrc = $rootScope.adaptChart(response.data.chart, $scope.legend);
                 }
                 if (response.data.table) {
                     $scope.items = response.data.table;
                 }
+            });
+
+            $http({
+                method: 'POST',
+                url: "/airlines",
+                headers: {"Content-Type": "application/json"},
+                data: {from: $scope.flights.from, to: $scope.flights.to}
+            }).then(response => {
+                if (response.data) $scope.airlines = response.data;
             });
         });
     };
