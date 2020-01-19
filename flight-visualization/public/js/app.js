@@ -77,7 +77,6 @@ app.controller('statsController', function ($scope, $rootScope, $http, $statePar
                 headers: {"Content-Type": "application/json"},
                 data: {from: $scope.flights.from, to: $scope.flights.to, method: currentMethod}
             }).then(response => {
-                console.log(response.data);
                 if (response.data.chart) {
                     $scope.statsSrc = $rootScope.adaptChart(response.data.chart, $scope.legend);
                 }
@@ -94,6 +93,7 @@ app.controller('statsController', function ($scope, $rootScope, $http, $statePar
         method: 'GET',
         url: '/details'
     }).then(response => {
+        if ($stateParams.stats === "traffic") return;
         $scope.details = "<br><br>";
         const data = response.data;
         for (let i in data)

@@ -37,26 +37,34 @@ app.get('/details', async function (req, res) {
 
 // TODO: Delete Home
 app.post('/home', async function (req, res) {
-    let stats = mapFlightsToForecastStats(await findFlights({}));
+    const dateFrom = req.body.from;
+    const dateTo = req.body.to;
+    let stats = mapFlightsToForecastStats(await findFlightBetweenDates(dateFrom, dateTo));
     res.send(stats);
 });
 
 app.post('/ma', async function (req, res) {
-    let stats = mapFlightsToForecastStats(await findFlights({}));
+    const dateFrom = req.body.from;
+    const dateTo = req.body.to;
+    let stats = mapFlightsToForecastStats(await findFlightBetweenDates(dateFrom, dateTo));
     const t = new timeseries.main(stats);
     const result = {chart: t.ma().chart({main: true})};
     res.send(result);
 });
 
 app.post('/lwma', async function (req, res) {
-    let stats = mapFlightsToForecastStats(await findFlights({}));
+    const dateFrom = req.body.from;
+    const dateTo = req.body.to;
+    let stats = mapFlightsToForecastStats(await findFlightBetweenDates(dateFrom, dateTo));
     const t = new timeseries.main(stats);
     const result = {chart: t.lwma().chart({main: true})};
     res.send(result);
 });
 
 app.post('/trend', async function (req, res) {
-    let stats = mapFlightsToForecastStats(await findFlights({}));
+    const dateFrom = req.body.from;
+    const dateTo = req.body.to;
+    let stats = mapFlightsToForecastStats(await findFlightBetweenDates(dateFrom, dateTo));
     const t = new timeseries.main(stats);
     const result = {
         chart: t.dsp_itrend({
@@ -67,7 +75,9 @@ app.post('/trend', async function (req, res) {
 });
 
 app.post('/smoothing', async function (req, res) {
-    let stats = mapFlightsToForecastStats(await findFlights({}));
+    const dateFrom = req.body.from;
+    const dateTo = req.body.to;
+    let stats = mapFlightsToForecastStats(await findFlightBetweenDates(dateFrom, dateTo));
     const t = new timeseries.main(stats);
     const result = {
         chart: t.smoother({
@@ -78,7 +88,9 @@ app.post('/smoothing', async function (req, res) {
 });
 
 app.post('/noise', async function (req, res) {
-    let stats = mapFlightsToForecastStats(await findFlights({}));
+    const dateFrom = req.body.from;
+    const dateTo = req.body.to;
+    let stats = mapFlightsToForecastStats(await findFlightBetweenDates(dateFrom, dateTo));
     const t = new timeseries.main(stats);
     const result = {chart: t.smoother({period: 10}).noiseData().smoother({period: 5}).chart()};
     res.send(result);
