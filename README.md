@@ -107,7 +107,7 @@ Model coefficients can be calculated using one of two methods (filter):
 
 Summary of real and predicted delays is presented in the table as well.
 
-![Forecast tab](prediction_impl.png)
+![Forecast tab](./img/prediction_impl.png)
 
 ### Airport traffic
 
@@ -115,4 +115,4 @@ Airport trafiic is defined as the sum of arrivals and departures during the day.
 
 This analysis is displayed in a **table**. It has an airport filter.
 
-![Traffic tab](traffic.png)
+![Traffic tab](./img/traffic.png)
