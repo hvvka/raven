@@ -28,7 +28,6 @@ jobs:
       - docker build -t consumer ./flight-consumer
       - docker tag consumer $DOCKER_USERNAME/consumer
       - docker push $DOCKER_USERNAME/consumer
-      - cd ..
       - docker build -t visualization ./flight-visualization
       - docker tag visualization $DOCKER_USERNAME/visualization
       - docker push $DOCKER_USERNAME/visualization

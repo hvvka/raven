@@ -18,5 +18,5 @@ COPY . .
 RUN apt-get update && apt-get install -y netcat-openbsd
 ENTRYPOINT ["./docker-entrypoint.sh"]
 
-EXPOSE 3001
+EXPOSE 3000
 CMD [ "npm", "start" ]
