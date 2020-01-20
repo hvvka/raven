@@ -23,16 +23,16 @@ Access [0.0.0.0:3000](http://0.0.0.0:3000)
 
 - Size: 655.15 MB
 - Data characteristics:
-     - 20 columns
-     - standardized data (from one source)
-     - data types:
-         - 4 dates (planned / real arrival / departure)
-         - 4 coordinates (departure, arrival)
-         - information about: flight number, airline, whether the flight took place, the airport / country / state / city of departure / arrival,
+    - 20 columns
+    - standardized data (from one source)
+    - data types:
+        - 4 dates (planned / real arrival / departure)
+        - 4 coordinates (departure, arrival)
+        - information about: flight number, airline, whether the flight took place, the airport / country / state / city of departure / arrival,
 - Other features:
-     - one CSV file
-     - data in Portuguese, but a translation is also available
-     - data availability under license conditions CC0: Public Domain (full freedom)
+    - one CSV file
+    - dataset in Portuguese, but a translation is also available
+    - data availability under license conditions CC0: Public Domain (full freedom)
 
 ## Data acquisition
 
@@ -43,14 +43,14 @@ Data acquisition process:
 1. User places files in a folder.
 1. The manufacturer's program listens for CSV files in the indicated folder - the path to the folder is given in the manufacturer's application.
 1. Reading subsequent lines from files, if:
-     - initially there are CSV files in the folder,
-     - new CSV files appears in the folder,
-     - new data appended to any CSV file.
+    - initially there are CSV files in the folder,
+    - new CSV files appears in the folder,
+    - new data appended to any CSV file.
 1. Skip reading file header.
 1. Data verification:
-     - checking if the given line is not empty,
-     - checking if the row contains 20 columns,
-     - validation of data types.
+    - checking if the given line is not empty,
+    - checking if the row contains 20 columns,
+    - validation of data types.
 1. Listening for further data to the file.
 
 ## Data storage
