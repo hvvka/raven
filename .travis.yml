@@ -14,7 +14,7 @@ jobs:
     - stage: build producer & consumer
     - script:
       - cd flight-producer
-      - ./gradlew test
+      # - ./gradlew test
       - ./gradlew bootJar
       - cd ..
       - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
@@ -22,10 +22,13 @@ jobs:
       - docker tag producer $DOCKER_USERNAME/producer
       - docker push $DOCKER_USERNAME/producer
       - cd flight-consumer       
-      - ./gradlew test
+      # - ./gradlew test
       - ./gradlew bootJar
       - cd ..
-      - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
       - docker build -t consumer ./flight-consumer
       - docker tag consumer $DOCKER_USERNAME/consumer
       - docker push $DOCKER_USERNAME/consumer
+      - cd ..
+      - docker build -t visualization ./flight-visualization
+      - docker tag visualization $DOCKER_USERNAME/visualization
+      - docker push $DOCKER_USERNAME/visualization
